@@ -8,8 +8,10 @@ include('../cloudinary/index.php');
     
     $category = $_POST['_category'];
     $playlist = $_POST['_playlist'];
+    $video_type = $_POST['_video_type'] ? $_POST['_video_type'] : '0';
     $video_file = $_FILES['_video_file'];
     $poster = $_FILES['_poster'];
+    $poster_link = $_POST['_poster_link'];
     $title = $_POST['_title'];
     $des = $_POST['_des'];
     $time = time();
@@ -35,19 +37,24 @@ include('../cloudinary/index.php');
         die();
     }
 
-    if ($category == '' || $title == '' || $poster['name'] == ''|| $video_file['name'] == '') {
+    $poster_name = $poster['name'];
+    if ($video_type > 0) {
+        $poster_name = 'image.jpg';
+    }
+
+    if ($category == '' || $title == '' || $poster_name == ''|| $video_file['name'] == '') {
         array_push($res, ['error'=> true, 'message'=> 'Bạn chưa nhập đủ thông tin']);
         echo json_encode($res);
         die();
     }
 
     if ($video_file['type'] != 'video/mp4') {
-        array_push($res, ['error'=> true, 'message'=> 'Video không đúng định dạng (MP4)']);
+        array_push($res, ['error'=> true, 'message'=> 'Video không đúng định dạng (MP4)','test'=>$video_file]);
         echo json_encode($res);
         die();
     }
 
-    if ($poster['type'] != 'image/png' && $poster['type'] != 'image/jpeg' && $poster['type'] != 'image/gif') {
+    if ($poster['type'] != 'image/png' && $poster['type'] != 'image/jpeg' && $poster['type'] != 'image/gif' && $video_type == '0') {
         array_push($res, ['error'=> true, 'message'=> 'Hình ảnh đại diện bạn nhập không đúng định dạng (PNG, JPEG, GIF)']);
         echo json_encode($res);
         die();
@@ -64,19 +71,28 @@ include('../cloudinary/index.php');
     $video_public_id = $data['data']['public_id'];
     $video_duration = $data['data']['duration'];
 
-    $sql = "INSERT INTO videos(user_id, category_id, playlist_id, video_title, video_public_id, video_link, video_poster, video_des, video_duration, playlist_update_time,video_views)
-            VALUES('$user_id', '$category', '$playlist', '$title', '$video_public_id', '$video_link', '".$time.$poster['name']."', '$des','$video_duration','$playlist_update_time','$views')";
+    $sql = "INSERT INTO videos(user_id, category_id, playlist_id, video_type, video_title, video_public_id, video_link, video_poster, video_des, video_duration, playlist_update_time,video_views)
+            VALUES('$user_id', '$category', '$playlist', '$video_type', '$title', '$video_public_id', '$video_link', '".$time.$poster_name."', '$des','$video_duration','$playlist_update_time','$views')";
     $rl = mysqli_query($conn, $sql);
 
     $idIsert = mysqli_insert_id($conn);
 
     if ($idIsert > 0) {
-        move_uploaded_file($poster['tmp_name'], '../images/video/'.$time.$poster['name']);
-        array_push($res, ['error'=> false,'message'=> 'Thêm video thành công !']);
+        if ($video_type > 0) {
+            $base64_data = str_replace('data:image/jpeg;base64,', '', $poster_link);
+            $base64_data = str_replace(' ', '+', $base64_data);
+            $decoded_data = base64_decode($base64_data);
+            $url = '../images/video/'.$time.$poster_name;
+            file_put_contents($url, $decoded_data);
+        }else{
+            move_uploaded_file($poster['tmp_name'], '../images/video/'.$time.$poster_name);
+        }
+        $type = $video_type > 0 ? "ngắn " : '';
+        array_push($res, ['error'=> false,'message'=> 'Thêm video '.$type.'thành công !']);
         echo json_encode($res);
         die();
     }else{
-        array_push($res, ['error'=> true,'message'=> 'Thêm video thất bại !']);
+        array_push($res, ['error'=> true,'message'=> 'Thêm video '.$type.'thất bại !']);
         echo json_encode($res);
     }
 ?>

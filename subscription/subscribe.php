@@ -31,6 +31,17 @@ include('../jwt.php');
         die();
     }
 
+    $sqlCheck = "SELECT subscribe_id FROM subscriptions WHERE subscriber_id='$user_id' AND subscribed_to_id='$id'";
+    $rlCheck = mysqli_query($conn, $sqlCheck);
+
+    $check = mysqli_num_rows($rlCheck);
+
+    if ($check > 0) {
+        array_push($res, ['error'=>true, 'message'=>'Bạn đã đăng ký kênh này rồi']);
+        echo json_encode($res);
+        die();
+    }
+
     $sql = "INSERT INTO subscriptions(subscriber_id, subscribed_to_id) VALUES('$user_id', '$id')";
     $rl = mysqli_query($conn, $sql);
 

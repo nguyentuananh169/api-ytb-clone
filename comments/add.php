@@ -6,7 +6,7 @@ include('../library.php');
     $res = [];
     
     $video_id = $_POST['_video_id'];
-    $host_user_id=$_POST['_host_user_id'];
+    $host_user_id = $_POST['_host_user_id'];
     $parent_id = $_POST['_parent_id'];
     $content = $_POST['_content'];
     $timestamp = getTimeCurrent();
@@ -30,7 +30,7 @@ include('../library.php');
         die();
     }
 
-    if ($video_id == '' || $parent_id == '' || $content=='') {
+    if ($video_id == '' || $host_user_id == '' ||$parent_id == '' || $content=='') {
         array_push($res, ['error'=> true, 'message'=> 'Bạn chưa nhập đủ thông tin']);
         echo json_encode($res);
         die();

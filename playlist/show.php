@@ -49,7 +49,7 @@
 
     while ( $row = mysqli_fetch_assoc($rl2) ) {
         $playlist_id = $row['playlist_id'];
-        $sql3 = "SELECT video_poster,category_id,video_id FROM videos WHERE playlist_id='$playlist_id' ORDER BY playlist_update_time ASC";
+        $sql3 = "SELECT video_poster,category_id,video_id,video_type FROM videos WHERE playlist_id='$playlist_id' ORDER BY playlist_update_time ASC";
         $rl3 = mysqli_query($conn,$sql3);
         $count = mysqli_num_rows($rl3);
         $data = mysqli_fetch_assoc($rl3);
@@ -69,6 +69,7 @@
             'playlist_name' => $playlist_name,
             'playlist_des' => $playlist_des,
             'video_id'=>$data['video_id'],
+            'video_type'=>$data['video_type'],
             'video_category_id'=>$data['category_id'],
             'video_poster'=>$data['video_poster'] ? URLImgVideo().$data['video_poster'] : '',
             'playlist_created_at' => $playlist_created_at,

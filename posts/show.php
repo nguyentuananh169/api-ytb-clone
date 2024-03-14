@@ -82,6 +82,7 @@
 				'video_des'=>$data['video_des'],
 				'video_duration'=>$data['video_duration'],
 				'video_id'=>$data['video_id'],
+				'video_type'=>$data['video_type'],
 				'video_link'=>$data['video_link'],
 				'video_poster'=>URLImgVideo().$data['video_poster'],
 				'video_title'=>$data['video_title'],

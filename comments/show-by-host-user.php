@@ -64,11 +64,12 @@
 			$rlReply = mysqli_query($conn,$sqlReply); 
 			$reply = mysqli_fetch_assoc($rlReply);
 
-			$sqlVideo = "SELECT video_poster, video_title,category_id FROM videos WHERE video_id='$video_id'";
+			$sqlVideo = "SELECT video_poster, video_title,category_id,video_type FROM videos WHERE video_id='$video_id'";
 			$rlVideo = mysqli_query($conn,$sqlVideo); 
 			$video_info = mysqli_fetch_assoc($rlVideo);
 			$video_poster = $video_info['video_poster'];
 			$video_title = $video_info['video_title'];
+			$video_type = $video_info['video_type'];
 			$category_id = $video_info['category_id'];
 		}
 
@@ -110,6 +111,7 @@
 			'category_id' => $category_id,
 			'video_poster' => URLImgVideo().$video_poster,
 			'video_title' => $video_title,
+			'video_type' => $video_type,
 			'user_id' => $user_id,
 			'user_name' => $user_name,
 			'user_avatar' => $user_avatar ? URLImgUser().$user_avatar : '',
