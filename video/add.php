@@ -6,10 +6,13 @@ include('../cloudinary/index.php');
 
     $res = [];
     
-    $category = $_POST['_category'];
+    $category = $_POST['_category'] ? $_POST['_category'] : 0;
     $playlist = $_POST['_playlist'];
     $video_type = $_POST['_video_type'] ? $_POST['_video_type'] : '0';
-    $video_file = $_FILES['_video_file'];
+    // $video_file = $_FILES['_video_file'];
+    $video_link = $_POST['_video_link'];
+    $video_public_id = $_POST['_video_public_id'];
+    $video_duration =  $_POST['_video_duration'];
     $poster = $_FILES['_poster'];
     $poster_link = $_POST['_poster_link'];
     $title = $_POST['_title'];
@@ -42,17 +45,17 @@ include('../cloudinary/index.php');
         $poster_name = 'image.jpg';
     }
 
-    if ($category == '' || $title == '' || $poster_name == ''|| $video_file['name'] == '') {
-        array_push($res, ['error'=> true, 'message'=> 'Bạn chưa nhập đủ thông tin']);
+    if ($title == '' || $poster_name == ''|| $video_link == '') {
+        array_push($res, ['error'=> true, 'message'=> 'Bạn có đủ thông tin']);
         echo json_encode($res);
         die();
     }
 
-    if ($video_file['type'] != 'video/mp4') {
-        array_push($res, ['error'=> true, 'message'=> 'Video không đúng định dạng (MP4)','test'=>$video_file]);
-        echo json_encode($res);
-        die();
-    }
+    // if ($video_file['type'] != 'video/mp4') {
+    //     array_push($res, ['error'=> true, 'message'=> 'Video không đúng định dạng (MP4)','test'=>$video_file]);
+    //     echo json_encode($res);
+    //     die();
+    // }
 
     if ($poster['type'] != 'image/png' && $poster['type'] != 'image/jpeg' && $poster['type'] != 'image/gif' && $video_type == '0') {
         array_push($res, ['error'=> true, 'message'=> 'Hình ảnh đại diện bạn nhập không đúng định dạng (PNG, JPEG, GIF)']);
@@ -60,16 +63,16 @@ include('../cloudinary/index.php');
         die();
     }
 
-    $video_url = $video_file['tmp_name'];
-    $data = cloudinary_upload($video_url);
-    if($data['error']){
-        array_push($res, ['error'=> true,'message'=> $data['message']]);
-        echo json_encode($res);
-        die();
-    }
-    $video_link = $data['data']['url'];
-    $video_public_id = $data['data']['public_id'];
-    $video_duration = $data['data']['duration'];
+    // $video_url = $video_file['tmp_name'];
+    // $data = cloudinary_upload($video_url);
+    // if($data['error']){
+    //     array_push($res, ['error'=> true,'message'=> $data['message']]);
+    //     echo json_encode($res);
+    //     die();
+    // }
+    // $video_link = $data['data']['url'];
+    // $video_public_id = $data['data']['public_id'];
+    // $video_duration = $data['data']['duration'];
 
     $sql = "INSERT INTO videos(user_id, category_id, playlist_id, video_type, video_title, video_public_id, video_link, video_poster, video_des, video_duration, playlist_update_time,video_views)
             VALUES('$user_id', '$category', '$playlist', '$video_type', '$title', '$video_public_id', '$video_link', '".$time.$poster_name."', '$des','$video_duration','$playlist_update_time','$views')";
